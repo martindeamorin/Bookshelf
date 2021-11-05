@@ -1,8 +1,12 @@
 package com.example.bookshelf.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,12 +28,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity()
 @Table(name = "author")
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "id")
 public class Author implements Serializable{
    @Id
    @GeneratedValue(strategy =  GenerationType.IDENTITY)
    private Long id;
    private String name;
    @Temporal(TemporalType.DATE)
+   @JsonFormat(pattern="dd-MM-yyyy")
    private Date birth;
    @ManyToMany
     @JoinTable(
@@ -37,4 +45,5 @@ public class Author implements Serializable{
          joinColumns = @JoinColumn(name = "book_id"),
          inverseJoinColumns = @JoinColumn(name = "author_id"))
    private List<Book> books;
+
 }

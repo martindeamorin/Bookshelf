@@ -28,7 +28,7 @@ public class Account implements Serializable{
     private Long id;
     private String username;
     private String password;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
          name = "account_rol",
          joinColumns = @JoinColumn(name = "account_id"),
