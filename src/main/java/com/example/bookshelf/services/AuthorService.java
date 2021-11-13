@@ -2,17 +2,36 @@ package com.example.bookshelf.services;
 
 import com.example.bookshelf.dao.AuthorDAO;
 import com.example.bookshelf.models.Author;
-import com.example.bookshelf.utils.CustomOperations;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorService implements CustomOperations<Author> {
+public class AuthorService implements ICommonService<Author> {
     
     @Autowired
     private AuthorDAO authorDAO;
+    
+    @Override
+    public Author save(Author entity) {
+        return this.authorDAO.save(entity);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        this.authorDAO.deleteById(id);
+    }
+
+    @Override
+    public List<Author> getAll() {
+        return this.authorDAO.findAll();
+    }
+
+    @Override
+    public Author getById(Long id) {
+        return this.authorDAO.getById(id);
+    }
     
     public Author getAuthorByName(String name){
         return authorDAO.findByName(name);
@@ -35,7 +54,5 @@ public class AuthorService implements CustomOperations<Author> {
         });
         return authors;
     }
-
-  
     
 }

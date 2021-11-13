@@ -18,19 +18,39 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class AccountService {
+public class AccountService implements ICommonService<Account>{
     @Autowired
     private AccountDAO accountDAO;
     @Autowired 
     private RolService rolService;
     @Autowired
     private JwtService jwtService;
-
-    @Transactional    
-    public Account createUser(Account account){
-        return accountDAO.save(account);
-    }
     
+    @Override
+    public Account save(Account entity) {
+        return this.accountDAO.save(entity);
+    }
+
+    @Override
+    public List<Account> findOrCreate(List<Account> entityList) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public List<Account> getAll() {
+        return this.accountDAO.findAll();
+    }
+
+    @Override
+    public Account getById(Long id) {
+        return this.accountDAO.getById(id);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        this.accountDAO.deleteById(id);
+    }
+
     @Transactional
     public Account getUserByUsername(String username){
         return accountDAO.findByUsername(username);
@@ -74,7 +94,7 @@ public class AccountService {
             newUser.setUsername(user.getUsername());
             newUser.setPassword(this.encryptPassword(user.getPassword()));
             newUser.setRoles(rolService.findOrCreate(user.getRoles()));
-            Account createdUser = this.createUser(newUser);
+            Account createdUser = this.save(newUser);
             return ResponseHandler.generateResponse("Usuario registrado con exito", HttpStatus.CREATED, createdUser);
        
         } catch(Exception e){
