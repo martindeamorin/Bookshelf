@@ -3,7 +3,6 @@ package com.example.bookshelf.controllers;
 import com.example.bookshelf.models.Book;
 import com.example.bookshelf.services.BookService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,31 +24,31 @@ public class BookRestController {
     
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping
-    public ResponseEntity<Object> getBooks() throws JsonProcessingException{
+    public ResponseEntity<Object> getBooks(){
         return this.bookService.getBooks();
     }
     
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping
-    public Book createBook(@RequestBody Book book){
+    public ResponseEntity<Object> createBook(@RequestBody Book book){
         return this.bookService.createBook(book);
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
     @PutMapping("/{id}")
-    public ResponseEntity<Object> editBook(@RequestBody Book book, @PathVariable("id") Long id) throws JsonProcessingException{
+    public ResponseEntity<Object> editBook(@RequestBody Book book, @PathVariable("id") Long id) {
         return this.bookService.editBook(id, book);
     }
     
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteBook(@PathVariable("id") Long id) throws JsonProcessingException{
+    public ResponseEntity<Object> deleteBook(@PathVariable("id") Long id){
         return this.bookService.deleteBook(id);
     }
     
     @PreAuthorize("hasRole('ROLE_USER')")
     @GetMapping("/{id}")
-    public ResponseEntity<Object> getBook(@PathVariable("id") Long id) throws JsonProcessingException{
+    public ResponseEntity<Object> getBook(@PathVariable("id") Long id){
         return this.bookService.getBook(id);
     }
 }

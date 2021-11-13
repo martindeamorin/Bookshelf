@@ -22,12 +22,14 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity()
@@ -37,27 +39,38 @@ import lombok.Setter;
   generator = ObjectIdGenerators.PropertyGenerator.class, 
   property = "id")
 public class Book implements Serializable{
+    
    @Id
    @GeneratedValue(strategy =  GenerationType.IDENTITY)
    private Long id;
+   
    private String title;
+   
    @Column(columnDefinition = "TEXT")
    private String description;
+   
    private String ISBN;
+   
    @Temporal(TemporalType.DATE)
    @JsonFormat(pattern="dd-MM-yyyy")
    private Date published_at;
+   
    private Integer edition;
+   
    @ManyToOne
    private Collection collection;
+   
    @ManyToOne
+   
    private Publisher publisher;
+   
    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JoinTable(
       name = "book_author",
       joinColumns = @JoinColumn(name = "author_id"),
       inverseJoinColumns = @JoinColumn(name = "book_id"))
    private List<Author> authors;
+   
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
       name = "book_genre",

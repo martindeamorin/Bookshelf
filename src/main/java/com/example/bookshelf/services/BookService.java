@@ -16,10 +16,15 @@ public class BookService {
     @Autowired
     private BookDAO bookDAO;
     
+    @Autowired
+    private AuthorService authorService;
+    
     @Transactional
-    public Book createBook(Book book){
+    public Book saveBook(Book book){
         return this.bookDAO.save(book);
     }
+    
+
     @Transactional    
     public List<Book> getAllBooks(){
         return this.bookDAO.findAll();
@@ -35,7 +40,26 @@ public class BookService {
         return this.bookDAO.getById(id);
     }
     
-    public ResponseEntity<Object> editBook(Long id, Book book) throws JsonProcessingException{
+    public ResponseEntity<Object> createBook(Book book){
+        try{
+            Book newBook = Book.builder()
+                .title(book.getTitle())
+                .ISBN(book.getISBN())
+                .description(book.getDescription())
+                .edition(book.getEdition())
+                .collection(book.getCollection())
+                .authors(authorService.findOrCreate(book.getAuthors()))
+                .published_at(book.getPublished_at())
+                .publisher(book.getPublisher())
+                .genres(book.getGenres()).build();
+            Book savedBook = this.saveBook(newBook);  
+            return ResponseHandler.generateResponse("Libre creado con exito", HttpStatus.CREATED, savedBook);
+        } catch(Exception e){
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
+        }
+    }
+    
+    public ResponseEntity<Object> editBook(Long id, Book book){
        try{
             Book bookToUpdate = this.getBookById(id);
             bookToUpdate.setAuthors(book.getAuthors());
@@ -44,36 +68,36 @@ public class BookService {
             bookToUpdate.setTitle(book.getTitle());
             bookToUpdate.setEdition(book.getEdition());
             bookToUpdate.setPublished_at(book.getPublished_at());
-            Book updatedBook = this.createBook(bookToUpdate);
+            Book updatedBook = this.saveBook(bookToUpdate);
             return ResponseHandler.generateResponse("Book succesfully updated", HttpStatus.OK, updatedBook);           
-       } catch(JsonProcessingException e){
+       } catch(Exception e){
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
        }
     }
     
-    public ResponseEntity<Object> deleteBook(Long id)throws JsonProcessingException{
+    public ResponseEntity<Object> deleteBook(Long id){
         try{
             this.deleteBookById(id);
             return ResponseHandler.generateResponse("Book with id " + id + " has been sucessfully deleted", HttpStatus.OK, null);
-        }catch(JsonProcessingException e){
+        }catch(Exception e){
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
     
-    public ResponseEntity<Object> getBooks() throws JsonProcessingException{
+    public ResponseEntity<Object> getBooks() {
         try{
             List<Book> books = this.getAllBooks();
             return ResponseHandler.generateResponse(null, HttpStatus.OK, books);
-        } catch(JsonProcessingException e){
+        } catch(Exception e){
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }
     
-    public ResponseEntity<Object> getBook(Long id) throws JsonProcessingException{
+    public ResponseEntity<Object> getBook(Long id)  {
         try{
             Book book = this.getBookById(id);
             return ResponseHandler.generateResponse(null, HttpStatus.OK, book);
-        } catch(JsonProcessingException e){
+        } catch(Exception e){
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
     }

@@ -35,7 +35,7 @@ public class AccountService {
     public Account getUserByUsername(String username){
         return accountDAO.findByUsername(username);
     }
-    @Transactional    
+
     public List<GrantedAuthority> getUserRolesAsGranthedAuthority(List<Rol> roles) {
         
         ArrayList<GrantedAuthority> grantedRoles = new ArrayList();
@@ -68,7 +68,7 @@ public class AccountService {
         return false;
     }
     
-    public ResponseEntity<Object> register(Account user) throws JsonProcessingException{
+    public ResponseEntity<Object> register(Account user) {
         try{
             Account newUser = new Account();
             newUser.setUsername(user.getUsername());
@@ -77,20 +77,21 @@ public class AccountService {
             Account createdUser = this.createUser(newUser);
             return ResponseHandler.generateResponse("Usuario registrado con exito", HttpStatus.CREATED, createdUser);
        
-        } catch(JsonProcessingException e){
+        } catch(Exception e){
             return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
 
     }
     
-    public ResponseEntity<Object> login(Account user) throws JsonProcessingException{
+    public ResponseEntity<Object> login(Account user){
         if(this.areLoginCredentialsValid(user)){
             Account account = this.getUserByUsername(user.getUsername());
             String token = this.jwtService.getJWTToken(account);
             return ResponseHandler.generateResponse(null, HttpStatus.OK, token);
         } else{
             return ResponseHandler.generateResponse("Las credenciales son incorrectas", HttpStatus.UNAUTHORIZED, null);
-        }
+        } 
+
     }
     
 }
