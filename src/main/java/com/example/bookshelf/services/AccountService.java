@@ -3,6 +3,7 @@ package com.example.bookshelf.services;
 import com.example.bookshelf.dao.AccountDAO;
 import com.example.bookshelf.models.Account;
 import com.example.bookshelf.models.Rol;
+import com.example.bookshelf.utils.ResponseHandler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -67,29 +68,28 @@ public class AccountService {
         return false;
     }
     
-    public ResponseEntity<String> register(Account user){
+    public ResponseEntity<Object> register(Account user) throws JsonProcessingException{
         try{
-            ObjectMapper mapper = new ObjectMapper();
             Account newUser = new Account();
             newUser.setUsername(user.getUsername());
             newUser.setPassword(this.encryptPassword(user.getPassword()));
             newUser.setRoles(rolService.findOrCreate(user.getRoles()));
             Account createdUser = this.createUser(newUser);
-            String json = mapper.writeValueAsString(createdUser);
-            return ResponseEntity.ok(json);            
+            return ResponseHandler.generateResponse("Usuario registrado con exito", HttpStatus.CREATED, createdUser);
+       
         } catch(JsonProcessingException e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            return ResponseHandler.generateResponse(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, null);
         }
 
     }
     
-    public ResponseEntity<String> login(Account user){
+    public ResponseEntity<Object> login(Account user) throws JsonProcessingException{
         if(this.areLoginCredentialsValid(user)){
             Account account = this.getUserByUsername(user.getUsername());
             String token = this.jwtService.getJWTToken(account);
-            return ResponseEntity.ok(token);
+            return ResponseHandler.generateResponse(null, HttpStatus.OK, token);
         } else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your credentials are not correct.");
+            return ResponseHandler.generateResponse("Las credenciales son incorrectas", HttpStatus.UNAUTHORIZED, null);
         }
     }
     

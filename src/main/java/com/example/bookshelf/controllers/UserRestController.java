@@ -2,6 +2,7 @@ package com.example.bookshelf.controllers;
 
 import com.example.bookshelf.models.Account;
 import com.example.bookshelf.services.AccountService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +18,12 @@ public class UserRestController {
     AccountService accountService;
     
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Account user){
+    public ResponseEntity<Object> register(@RequestBody Account user) throws JsonProcessingException{
         return this.accountService.register(user);
     }
     
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Account user) throws Exception{
+    public ResponseEntity<Object> login(@RequestBody Account user) throws JsonProcessingException{
         return this.accountService.login(user);
     }
     
